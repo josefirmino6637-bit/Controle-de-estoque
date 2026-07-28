@@ -54,14 +54,15 @@
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // COLE AQUI AS SUAS CHAVES REAIS DO FIREBASE QUE VOCÊ COPIOU
-        const firebaseConfig = {
-            apiKey: "COLE_ SUA_API_KEY_AQUI",
-            authDomain: "COLE_SEU_AUTH_DOMAIN_AQUI",
-            projectId: "COLE_SEU_PROJECT_ID_AQUI",
-            storageBucket: "COLE_SEU_STORAGE_BUCKET_AQUI",
-            messagingSenderId: "COLE_SEU_MESSAGING_SENDER_ID_AQUI",
-            appId: "COLE_SEU_APP_ID_AQUI"
-        };
+        
+const firebaseConfig = {
+  apiKey: "AIzaSyBinUUB4IsnjosBcIqkJZHZ8guGUXEnc19w",
+  authDomain: "smartdrivestore-1ef81.firebaseapp.com",
+  projectId: "smartdrivestore-1ef81",
+  storageBucket: "smartdrivestore-1ef81.firebasestorage.app",
+  messagingSenderId: "280894137155",
+  appId: "1:280894137155:web:9a03bac25941ffae0a85f6"
+};
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
