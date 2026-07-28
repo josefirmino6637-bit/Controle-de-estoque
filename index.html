@@ -12,6 +12,9 @@
         button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
         button:hover { background: #0056b3; }
         .produto-item { background: #f9f9f9; padding: 10px; margin-bottom: 10px; border-left: 4px solid #007bff; display: flex; justify-content: space-between; align-items: center; }
+        .resumo-box { background: #e8f4fd; border: 1px solid #b6d4fe; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .resumo-box h4 { margin: 0 0 10px 0; color: #084298; }
+        .resumo-box p { margin: 5px 0; font-size: 15px; }
     </style>
 </head>
 <body>
@@ -30,6 +33,13 @@
             <h2>🧱 Firmino Materiais de Construção</h2>
             <button id="btn-logout" style="background: #dc3545; margin-bottom: 20px;">Sair / Fechar Turno</button>
             
+            <!-- PAINEL DE VALOR DO ESTOQUE -->
+            <div class="resumo-box">
+                <h4>📊 Resumo Financeiro do Estoque</h4>
+                <p><strong>Valor Total de Custo:</strong> <span id="total-custo">R$ 0,00</span></p>
+                <p><strong>Valor Total de Venda:</strong> <span id="total-venda">R$ 0,00</span></p>
+            </div>
+
             <hr>
             
             <h3>Cadastrar Novo Produto</h3>
@@ -113,7 +123,7 @@
             try {
                 await addDoc(collection(db, "produtos"), {
                     nome, categoria,
-                    precoCusto: Number(custo),
+                    precoCusto: Number(custo || 0),
                     precoVenda: Number(venda),
                     quantidadeEstoque: Number(qtd),
                     atualizadoEm: new Date()
@@ -130,31 +140,55 @@
             }
         });
 
-        // Listar e Vender Produtos
+        // Listar, Calcular Totais e Vender Produtos
         async function carregarProdutos() {
             const listaDiv = document.getElementById('lista-produtos');
+            const spanCusto = document.getElementById('total-custo');
+            const spanVenda = document.getElementById('total-venda');
+            
             listaDiv.innerHTML = "Carregando...";
             try {
                 const querySnapshot = await getDocs(collection(db, "produtos"));
                 listaDiv.innerHTML = "";
+                
+                let somaCustoTotal = 0;
+                let somaVendaTotal = 0;
+                let contadorValidos = 0;
+
                 querySnapshot.forEach((documento) => {
                     const p = documento.data();
                     const id = documento.id;
                     
-                    // Ignora itens salvos incorretamente sem nome
-                    if (!p.nome) return;
+                    if (!p.nome) return; // Ignora itens vazios antigos
+
+                    contadorValidos++;
+                    const custoUnit = Number(p.precoCusto || 0);
+                    const vendaUnit = Number(p.precoVenda || 0);
+                    const qtd = Number(p.quantidadeEstoque || 0);
+
+                    somaCustoTotal += (custoUnit * qtd);
+                    somaVendaTotal += (vendaUnit * qtd);
 
                     const item = document.createElement('div');
                     item.className = 'produto-item';
                     item.innerHTML = `
                         <div>
                             <strong>${p.nome}</strong> (${p.categoria || 'Geral'})<br>
-                            Preço: R$ ${p.precoVenda} | Estoque: <strong>${p.quantidadeEstoque}</strong>
+                            Preço: R$ ${vendaUnit.toFixed(2)} | Estoque: <strong>${qtd}</strong>
                         </div>
                         <button style="width: auto; padding: 5px 10px;" onclick="vender('${id}')">Vender 1</button>
                     `;
                     listaDiv.appendChild(item);
                 });
+
+                if (contadorValidos === 0) {
+                    listaDiv.innerHTML = "Nenhum produto cadastrado ainda.";
+                }
+
+                // Atualiza os totais na tela
+                spanCusto.innerText = `R$ ${somaCustoTotal.toFixed(2)}`;
+                spanVenda.innerText = `R$ ${somaVendaTotal.toFixed(2)}`;
+
             } catch (e) {
                 listaDiv.innerHTML = "Erro ao carregar o estoque.";
             }
