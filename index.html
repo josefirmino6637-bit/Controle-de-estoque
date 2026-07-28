@@ -12,7 +12,6 @@
         button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
         button:hover { background: #0056b3; }
         .produto-item { background: #f9f9f9; padding: 10px; margin-bottom: 10px; border-left: 4px solid #007bff; display: flex; justify-content: space-between; align-items: center; }
-        .box-cadastro { background: #eef2f7; padding: 15px; border-radius: 6px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -24,13 +23,6 @@
             <input type="email" id="login-email" placeholder="E-mail do operador">
             <input type="password" id="login-senha" placeholder="Senha">
             <button id="btn-login">Entrar no Sistema</button>
-
-            <div class="box-cadastro">
-                <h3>Criar Novo Operador</h3>
-                <input type="email" id="novo-email" placeholder="E-mail do novo operador">
-                <input type="password" id="novo-senha" placeholder="Senha (mínimo 6 dígitos)">
-                <button id="btn-criar-usuario" style="background: #28a745;">Cadastrar Nova Conta</button>
-            </div>
         </div>
 
         <!-- TELA PRINCIPAL DO SISTEMA -->
@@ -58,7 +50,7 @@
     <!-- SCRIPT DO FIREBASE E LÓGICA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -97,20 +89,6 @@
                 await signInWithEmailAndPassword(auth, email, senha);
             } catch (error) {
                 alert("Erro ao entrar: " + error.message);
-            }
-        });
-
-        // Ação de Criar Novo Usuário Direto pelo Site
-        document.getElementById('btn-criar-usuario').addEventListener('click', async () => {
-            const email = document.getElementById('novo-email').value;
-            const senha = document.getElementById('novo-senha').value;
-            try {
-                await createUserWithEmailAndPassword(auth, email, senha);
-                alert("Operador cadastrado com sucesso! Agora você já pode entrar.");
-                document.getElementById('novo-email').value = '';
-                document.getElementById('novo-senha').value = '';
-            } catch (error) {
-                alert("Erro ao cadastrar usuário: " + error.message);
             }
         });
 
