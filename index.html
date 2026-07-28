@@ -23,11 +23,11 @@
         <!-- Cards de Resumo -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div class="bg-slate-800/50 border border-slate-700/60 p-6 rounded-2xl shadow-sm">
-                <p class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Total de Itens</p>
+                <p class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Total de Itens em Estoque</p>
                 <p id="totalItens" class="text-4xl font-extrabold text-white mt-2">0</p>
             </div>
             <div class="bg-slate-800/50 border border-slate-700/60 p-6 rounded-2xl shadow-sm">
-                <p class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Valor Total em Estoque</p>
+                <p class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Valor Total em Venda</p>
                 <p id="valorTotal" class="text-4xl font-extrabold text-emerald-400 mt-2">R$ 0,00</p>
             </div>
         </div>
@@ -35,8 +35,8 @@
         <!-- Formulário de Cadastro -->
         <div class="bg-slate-800 border border-slate-700 p-6 rounded-2xl shadow-lg mb-8">
             <h2 class="text-lg font-bold text-white mb-4">Adicionar Novo Item</h2>
-            <form id="produtoForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="md:col-span-2">
+            <form id="produtoForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-3">
                     <label class="block text-xs font-medium text-slate-400 mb-1">Nome do Produto</label>
                     <input type="text" id="nome" required placeholder="Ex: Suporte Veicular Magnético" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
                 </div>
@@ -45,10 +45,14 @@
                     <input type="number" id="quantidade" min="1" value="1" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-400 mb-1">Preço Unitário (R$)</label>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Preço de Custo (R$)</label>
+                    <input type="number" id="custo" step="0.01" min="0" placeholder="0,00" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Preço de Venda (R$)</label>
                     <input type="number" id="preco" step="0.01" min="0" placeholder="0,00" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500">
                 </div>
-                <div class="md:col-span-4 mt-2">
+                <div class="md:col-span-3 mt-2">
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl transition duration-200 shadow-md">
                         Cadastrar no Estoque
                     </button>
@@ -69,7 +73,7 @@
                         <tr class="border-b border-slate-700 text-xs text-slate-400 uppercase">
                             <th class="py-3 px-4">Produto</th>
                             <th class="py-3 px-4">Qtd</th>
-                            <th class="py-3 px-4">Preço Unit.</th>
+                            <th class="py-3 px-4">Venda Unit.</th>
                             <th class="py-3 px-4">Total</th>
                             <th class="py-3 px-4 text-right">Ações</th>
                         </tr>
@@ -104,13 +108,22 @@
             e.preventDefault();
             const nome = document.getElementById('nome').value;
             const quantidade = parseInt(document.getElementById('quantidade').value);
+            const custo = parseFloat(document.getElementById('custo').value);
             const preco = parseFloat(document.getElementById('preco').value);
 
-            produtos.push({ id: Date.now(), nome, quantidade, preco });
+            produtos.push({ id: Date.now(), nome, quantidade, custo, preco });
             form.reset();
             document.getElementById('quantidade').value = 1;
             salvarEAtualizar();
         });
+
+        function vender(id) {
+            const produto = produtos.find(p => p.id === id);
+            if (produto && produto.quantidade > 0) {
+                produto.quantidade -= 1;
+                salvarEAtualizar();
+            }
+        }
 
         function deletar(id) {
             produtos = produtos.filter(p => p.id !== id);
@@ -135,14 +148,22 @@
                 totalQtd += p.quantidade;
                 totalVal += (p.quantidade * p.preco);
 
+                let alertaEstoque = '';
+                if (p.quantidade <= 2) {
+                    alertaEstoque = `<span class="ml-2 bg-amber-500/10 text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-semibold">Baixo</span>`;
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="py-3.5 px-4 font-medium text-white">${p.nome}</td>
-                    <td class="py-3.5 px-4 text-slate-300">${p.quantidade}</td>
+                    <td class="py-3.5 px-4 font-medium text-white">
+                        ${p.nome} ${alertaEstoque}
+                    </td>
+                    <td class="py-3.5 px-4 text-slate-300 font-bold">${p.quantidade}</td>
                     <td class="py-3.5 px-4 text-slate-300">R$ ${p.preco.toFixed(2).replace('.', ',')}</td>
                     <td class="py-3.5 px-4 text-slate-300 font-semibold">R$ ${(p.quantidade * p.preco).toFixed(2).replace('.', ',')}</td>
-                    <td class="py-3.5 px-4 text-right">
-                        <button onclick="deletar(${p.id})" class="text-rose-400 hover:text-rose-300 text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 px-3 py-1.5 rounded-lg transition">Excluir</button>
+                    <td class="py-3.5 px-4 text-right space-x-1">
+                        <button onclick="vender(${p.id})" class="text-emerald-400 hover:text-emerald-300 text-xs font-medium bg-emerald-500/10 hover:bg-emerald-500/20 px-2.5 py-1.5 rounded-lg transition" title="Dar baixa de 1 unidade">Vender</button>
+                        <button onclick="deletar(${p.id})" class="text-rose-400 hover:text-rose-300 text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1.5 rounded-lg transition">Excluir</button>
                     </td>
                 `;
                 tabela.appendChild(tr);
