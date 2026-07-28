@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Balcão - Loja</title>
+    <title>Firmino Materiais de Construção</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -19,7 +19,7 @@
     <div class="container">
         <!-- TELA DE LOGIN -->
         <div id="login-section">
-            <h2>🔐 Login do Operador</h2>
+            <h2>🔐 Login do Operador - Firmino</h2>
             <input type="email" id="login-email" placeholder="E-mail do operador">
             <input type="password" id="login-senha" placeholder="Senha">
             <button id="btn-login">Entrar no Sistema</button>
@@ -27,14 +27,14 @@
 
         <!-- TELA PRINCIPAL DO SISTEMA -->
         <div id="app-section" class="hidden">
-            <h2>🛒 Frente de Caixa & Estoque</h2>
+            <h2>🧱 Firmino Materiais de Construção</h2>
             <button id="btn-logout" style="background: #dc3545; margin-bottom: 20px;">Sair / Fechar Turno</button>
             
             <hr>
             
             <h3>Cadastrar Novo Produto</h3>
-            <input type="text" id="prod-nome" placeholder="Nome do Produto (ex: Disjuntor 32A)">
-            <input type="text" id="prod-cat" placeholder="Categoria (ex: Elétrica)">
+            <input type="text" id="prod-nome" placeholder="Nome do Produto (ex: Cimento, Tijolo)">
+            <input type="text" id="prod-cat" placeholder="Categoria (ex: Alvenaria)">
             <input type="number" id="prod-custo" placeholder="Preço de Custo (R$)">
             <input type="number" id="prod-venda" placeholder="Preço de Venda (R$)">
             <input type="number" id="prod-qtd" placeholder="Quantidade Inicial no Estoque">
@@ -141,6 +141,9 @@
                     const p = documento.data();
                     const id = documento.id;
                     
+                    // Ignora itens salvos incorretamente sem nome
+                    if (!p.nome) return;
+
                     const item = document.createElement('div');
                     item.className = 'produto-item';
                     item.innerHTML = `
