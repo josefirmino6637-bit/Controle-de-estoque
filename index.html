@@ -62,15 +62,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-          apiKey: "AIzaSyBinUUB4IsnjosBcIqkJZHZ8guGUXEO19w",
-          authDomain: "smartdrivestore-1ef81.firebaseapp.com",
-          projectId: "smartdrivestore-1ef81",
-          storageBucket: "smartdrivestore-1ef81.firebasestorage.app",
-          messagingSenderId: "280894137155",
-          appId: "1:280894137155:web:9a03bac25941ffae0a85f6"
-        };
+        import { firebaseConfig } from "./config.js";
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
